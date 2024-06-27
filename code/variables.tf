@@ -1,5 +1,5 @@
 variable "resource_group_location" {
-default     = "North Europe"
+default     = "West Europe"
 description = "Location of the resource group."
 }
 
