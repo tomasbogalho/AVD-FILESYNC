@@ -44,6 +44,7 @@
 
 name: 'Terraform'
 
+
 on:
   push:
     branches: [ "main" ]
@@ -64,6 +65,7 @@ jobs:
         shell: bash
 
     steps:
+      working-directory: ./code
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
