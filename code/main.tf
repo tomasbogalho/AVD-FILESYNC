@@ -69,7 +69,6 @@ locals {
 }
 
 resource "random_string" "rand" {
-  count            = var.rdsh_count
   length           = 16
   special          = true
   min_special      = 2
