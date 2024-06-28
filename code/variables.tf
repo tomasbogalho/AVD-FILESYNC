@@ -84,3 +84,15 @@ variable "local_admin_password" {
   description = "local admin password"
   sensitive   = true
 }
+variable "vnet_name" {
+  type        = string
+  default     = "AVD-VNET"
+  description = "Name of the VNET"
+}
+
+variable "subnet_name" {
+  type        = string
+  default     = "AVD-SUBNET"
+  description = "Name of the Subnet"
+
+}
