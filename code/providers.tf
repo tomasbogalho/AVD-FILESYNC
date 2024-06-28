@@ -8,6 +8,12 @@ terraform {
       source = "hashicorp/azuread"
     }
   }
+  backend "azurerm" {
+  resource_group_name   = "RG_Terraform_Manangement"
+  storage_account_name  = "saerrmanangement4388"
+  container_name        = "terraformstate"
+  key                   = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
