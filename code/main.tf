@@ -68,7 +68,7 @@ locals {
   registration_token = azurerm_virtual_desktop_host_pool_registration_info.registrationinfo.token
 }
 
-resource "random_string" "AVD_local_password" {
+resource "random_string" "rand" {
   count            = var.rdsh_count
   length           = 16
   special          = true
@@ -215,7 +215,7 @@ resource "azurerm_virtual_network_peering" "peering" {
 
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
-  name                     = "var.storage_account_name+${randomstring}"
+  name                     = "var.storage_account_name+${random_string.rand.result}"
   resource_group_name      = azurerm_resource_group.rg_sa.name
   location                 = var.resource_group_location
   account_tier             = "Standard"

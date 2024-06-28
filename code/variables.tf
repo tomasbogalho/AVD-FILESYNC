@@ -1,9 +1,3 @@
-resource "random_string" "random" {
-  length           = 16
-  special          = true
-  override_special = "/@£$"
-}
-
 variable "resource_group_location" {
   default     = "West Europe"
   description = "Location of the resource group."
