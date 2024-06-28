@@ -69,7 +69,7 @@ variable "vm_size" {
 }
 
 variable "ou_path" {
-  default = ""
+  default = "OU=YourOU,DC=yourdomain,DC=com"
 }
 
 variable "local_admin_username" {
@@ -94,5 +94,19 @@ variable "subnet_name" {
   type        = string
   default     = "AVD-SUBNET"
   description = "Name of the Subnet"
+
+}
+
+variable "service_principal_id" {
+  type        = string
+  default     = ARM_CL
+  description = "Service Principal ID"
+
+}
+
+variable "sevice_principal_secret" {
+  type        = string
+  default     = var.ARM_CLIENT_ID
+  description = "Service Principal Secret"
 
 }
