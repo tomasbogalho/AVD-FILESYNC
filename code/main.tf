@@ -117,7 +117,7 @@ resource "azurerm_windows_virtual_machine" "avd_vm" {
 
 
 resource "azurerm_virtual_machine_extension" "aad_login" {
-  count                      = var.rdsh_count
+  count                = var.rdsh_count
   name                 = "AADLogin"
   virtual_machine_id   = azurerm_windows_virtual_machine.avd_vm.*.id[count.index]
   publisher            = "Microsoft.Azure.ActiveDirectory"
