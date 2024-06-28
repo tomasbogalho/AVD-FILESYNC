@@ -46,13 +46,13 @@ variable "rdsh_count" {
 
 variable "domain_name" {
   type        = string
-  default     = "tomasbogalho.com"
+  default     = "MngEnvMCAP255683.onmicrosoft.com"
   description = "Name of the domain to join"
 }
 
 variable "domain_user_upn" {
   type        = string
-  default     = "domainjoineruser" # do not include domain name as this is appended
+  default     = "admin" # do not include domain name as this is appended
   description = "Username for domain join (do not include domain name as this is appended)"
 }
 
