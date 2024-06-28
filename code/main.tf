@@ -68,11 +68,12 @@ locals {
   registration_token = azurerm_virtual_desktop_host_pool_registration_info.registrationinfo.token
 }
 
-resource "random_string" "rand" {
-  length           = 16
-  special          = true
-  min_special      = 2
-  override_special = "*!@#?"
+resource "random_string" "storage_account_name" {
+  length  = 8
+  lower   = true
+  numeric = false
+  special = false
+  upper   = false
 }
 
 resource "azurerm_network_interface" "avd_vm_nic" {
@@ -185,12 +186,12 @@ resource "azurerm_virtual_network" "storage_account_vnet" {
   name                = var.storage_account_vnet_name
   address_space       = ["10.0.1.0/24"]
   location            = var.resource_group_location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = azurerm_resource_group.rg_sa.name
 }
 
 resource "azurerm_subnet" "storage_account_subnet" {
   name                 = var.storage_account_subnet_name
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = azurerm_resource_group.rg_sa.name
   virtual_network_name = azurerm_virtual_network.storage_account_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 
@@ -210,11 +211,25 @@ resource "azurerm_virtual_network_peering" "peering" {
     azurerm_virtual_network.storage_account_vnet
   ]
 }
+#creating the peering between storage account vnet and avd vnet
+resource "azurerm_virtual_network_peering" "name" {
+  name                         = "storage-account-vnet-to-avd-vnet"
+  resource_group_name          = azurerm_resource_group.rg_sa.name
+  virtual_network_name         = azurerm_virtual_network.storage_account_vnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.vnet.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
 
+  depends_on = [
+    azurerm_virtual_network.vnet,
+    azurerm_virtual_network.storage_account_vnet
+  ]
+
+}
 
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
-  name                     = "var.storage_account_name+${random_string.rand.result}"
+  name                     = random_string.storage_account_name.result
   resource_group_name      = azurerm_resource_group.rg_sa.name
   location                 = var.resource_group_location
   account_tier             = "Standard"
@@ -227,3 +242,39 @@ resource "azurerm_storage_account" "sa" {
 
 }
 
+resource "azurerm_private_dns_zone" "pdns_st" {
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = azurerm_resource_group.rg_sa.name
+}
+
+resource "azurerm_private_endpoint" "pep_st" {
+  name                = "pep-sd2488-st-non-prod-weu"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.storage_account_subnet.id
+  private_service_connection {
+    name                           = "sc-sta"
+    private_connection_resource_id = azurerm_storage_account.sa.id
+    subresource_names              = ["blob"]
+    is_manual_connection           = false
+  }
+  private_dns_zone_group {
+    name                 = "dns-group-sta"
+    private_dns_zone_ids = [azurerm_private_dns_zone.pdns_st.id]
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_sta" {
+  name                  = "lnk-dns-vnet-sta"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
+  virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
+}
+
+resource "azurerm_private_dns_a_record" "dns_a_sta" {
+  name                = "sta_a_record"
+  zone_name           = azurerm_private_dns_zone.pdns_st.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 300
+  records             = [azurerm_private_endpoint.pep_st.private_service_connection.0.private_ip_address]
+}
