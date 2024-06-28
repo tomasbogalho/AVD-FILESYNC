@@ -130,8 +130,8 @@ resource "azurerm_virtual_machine_extension" "domain_join" {
       "Restart": "true",
       "Options": "3",
       "UseServicePrincipal": "true",
-      "ServicePrincipalId": "${var.service_principal_id}",
-      "ServicePrincipalSecret": "${var.sevice_principal_secret}",
+      "ServicePrincipalId": "${AZURE_AD_CLIENT_ID}",
+      "ServicePrincipalSecret": "${AZURE_AD_CLIENT_SECRET}",
     }
 SETTINGS
 

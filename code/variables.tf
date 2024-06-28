@@ -106,7 +106,7 @@ variable "service_principal_id" {
 
 variable "sevice_principal_secret" {
   type        = string
-  default     = var.ARM_CLIENT_ID
+  default     = ARM_CLIENT_ID
   description = "Service Principal Secret"
 
 }
