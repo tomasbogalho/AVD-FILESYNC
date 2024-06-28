@@ -23,7 +23,7 @@ variable "hostpool" {
 
 variable "rfc3339" {
   type        = string
-  default     = "2022-03-30T12:43:13Z"
+  default     = "2024-07-01T12:00:00Z"
   description = "Registration token expiration"
 }
 
