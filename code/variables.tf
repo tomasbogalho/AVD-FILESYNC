@@ -33,45 +33,66 @@ variable "prefix" {
   description = "Prefix for all resources"
 }
 
-variable "vm_name" {
+
+variable "resource_group_location" {
+  default     = "eastus"
+  description = "Location of the resource group."
+}
+
+variable "rg" {
   type        = string
-  default     = "avd-vm"
-  description = "Name of the virtual machine"
+  default     = "rg-avd-compute"
+  description = "Name of the Resource group in which to deploy session host"
+}
+
+variable "rdsh_count" {
+  description = "Number of AVD machines to deploy"
+  default     = 2
+}
+
+variable "prefix" {
+  type        = string
+  default     = "avdtf"
+  description = "Prefix of the name of the AVD machine(s)"
+}
+
+variable "domain_name" {
+  type        = string
+  default     = "infra.local"
+  description = "Name of the domain to join"
+}
+
+variable "domain_user_upn" {
+  type        = string
+  default     = "domainjoineruser" # do not include domain name as this is appended
+  description = "Username for domain join (do not include domain name as this is appended)"
+}
+
+variable "domain_password" {
+  type        = string
+  default     = "ChangeMe123!"
+  description = "Password of the user to authenticate with the domain"
+  sensitive   = true
 }
 
 variable "vm_size" {
+  description = "Size of the machine to deploy"
+  default     = "Standard_DS2_v2"
+}
+
+variable "ou_path" {
+  default = ""
+}
+
+variable "local_admin_username" {
   type        = string
-  default     = "Standard_D2s_v3"
-  description = "Size of the virtual machine"
+  default     = "localadm"
+  description = "local admin username"
 }
 
-variable "nic_name" {
+variable "local_admin_password" {
   type        = string
-  default     = "avd-nic"
-  description = "Name of the network interface"
-}
-
-variable "subnet_name" {
-  type        = string
-  default     = "avd-subnet"
-  description = "Name of the subnet"
-}
-
-variable "vnet_name" {
-  type        = string
-  default     = "avd-vn"
-  description = "Name of the virtual network"
-  
-}
-
-variable "vnet_address_space" {
-  type        = list(string)
-  default     = ["10.0.0.0/16"]
-  
-}
-
-variable "subnet_address_prefix" {
-  type        = list(string)
-  default     = ["10.0.0.0/24"]
-  
+  default     = "ChangeMe123!"
+  description = "local admin password"
+  sensitive   = true
 }
