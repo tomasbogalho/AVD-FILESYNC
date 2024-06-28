@@ -97,11 +97,11 @@ resource "azurerm_network_interface" "nic" {
 
 # Create virtual machine
 resource "azurerm_virtual_machine" "vm" {
-  name                  = var.vm_name
-  resource_group_name   = azurerm_resource_group.sh.name
-  location              = azurerm_resource_group.sh.location
-  vm_size               = var.vm_size
-  network_interface_ids = [azurerm_network_interface.nic.id]
+  name                          = var.vm_name
+  resource_group_name           = azurerm_resource_group.sh.name
+  location                      = azurerm_resource_group.sh.location
+  vm_size                       = var.vm_size
+  network_interface_ids         = [azurerm_network_interface.nic.id]
   delete_os_disk_on_termination = true
 
   storage_image_reference {
