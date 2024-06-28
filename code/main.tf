@@ -180,6 +180,21 @@ PROTECTED_SETTINGS
   ]
 }
 
+resource "azurerm_virtual_machine_extension" "avd_agent" {
+  count                = var.rdsh_count
+  name                 = "${var.prefix}${count.index}-AVDAgent"
+  virtual_machine_id   = azurerm_windows_virtual_machine.avd_vm.*.id[count.index]
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+  settings             = <<SETTINGS
+    {
+      "commandToExecute": "powershell.exe -Command \"Your PowerShell command to install AVD agent and configure with registration token here\""
+    }
+    SETTINGS
+}
+
+
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   address_space       = ["10.0.0.0/16"]
