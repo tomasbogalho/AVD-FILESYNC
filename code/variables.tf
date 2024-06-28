@@ -46,7 +46,7 @@ variable "rdsh_count" {
 
 variable "domain_name" {
   type        = string
-  default     = "infra.local"
+  default     = "tomasbogalho.com"
   description = "Name of the domain to join"
 }
 

@@ -126,11 +126,12 @@ resource "azurerm_virtual_machine_extension" "domain_join" {
 
   settings = <<SETTINGS
     {
-      "Name": "${var.domain_name}",
       "OUPath": "${var.ou_path}",
-      "User": "${var.domain_user_upn}@${var.domain_name}",
       "Restart": "true",
-      "Options": "3"
+      "Options": "3",
+      "UseServicePrincipal": "true",
+      "ServicePrincipalId": "${AZURE_CLIENT_ID}",
+      "ServicePrincipalSecret": "${AZURE_aD_CLIENT_SECRET}"
     }
 SETTINGS
 
@@ -178,20 +179,6 @@ PROTECTED_SETTINGS
     azurerm_virtual_machine_extension.domain_join,
     azurerm_virtual_desktop_host_pool.hostpool
   ]
-}
-
-resource "azurerm_virtual_machine_extension" "avd_agent" {
-  count                = var.rdsh_count
-  name                 = "${var.prefix}${count.index}-AVDAgent"
-  virtual_machine_id   = azurerm_windows_virtual_machine.avd_vm.*.id[count.index]
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-  settings             = <<SETTINGS
-    {
-      "commandToExecute": "powershell.exe -Command \"Your PowerShell command to install AVD agent and configure with registration token here\""
-    }
-    SETTINGS
 }
 
 
