@@ -144,8 +144,16 @@ PROTECTED_SETTINGS
     ignore_changes = [settings, protected_settings]
   }
 
-
 }
+
+resource "azurerm_virtual_machine_extension" "aad_login" {
+  name                 = "AADLogin"
+  virtual_machine_id   = azurerm_windows_virtual_machine.avd_vm.*.id[count.index]
+  publisher            = "Microsoft.Azure.ActiveDirectory"
+  type                 = "AADLoginForWindows" # For Windows VMs: AADLoginForWindows for linux VMs: AADLoginForLinux
+  type_handler_version = "1.0"                # There may be a more recent version
+}
+
 
 resource "azurerm_virtual_machine_extension" "vmext_dsc" {
   count                      = var.rdsh_count
