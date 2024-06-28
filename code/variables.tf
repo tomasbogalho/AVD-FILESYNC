@@ -69,7 +69,7 @@ variable "vm_size" {
 }
 
 variable "ou_path" {
-  default = "OU=YourOU,DC=yourdomain,DC=com"
+  default = ""
 }
 
 variable "local_admin_username" {
