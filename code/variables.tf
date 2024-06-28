@@ -33,12 +33,6 @@ variable "prefix" {
   description = "Prefix for all resources"
 }
 
-
-variable "resource_group_location" {
-  default     = "eastus"
-  description = "Location of the resource group."
-}
-
 variable "rg" {
   type        = string
   default     = "rg-avd-compute"
@@ -48,12 +42,6 @@ variable "rg" {
 variable "rdsh_count" {
   description = "Number of AVD machines to deploy"
   default     = 2
-}
-
-variable "prefix" {
-  type        = string
-  default     = "avdtf"
-  description = "Prefix of the name of the AVD machine(s)"
 }
 
 variable "domain_name" {
