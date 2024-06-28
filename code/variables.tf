@@ -1,3 +1,9 @@
+resource "random_string" "random" {
+  length           = 16
+  special          = true
+  override_special = "/@£$"
+}
+
 variable "resource_group_location" {
   default     = "West Europe"
   description = "Location of the resource group."
@@ -7,6 +13,19 @@ variable "rg_name" {
   type        = string
   default     = "rg-avd-resources"
   description = "Name of the Resource group in which to deploy service objects"
+}
+
+variable "rg_sa" {
+  type        = string
+  default     = "rg-storage-account"
+  description = "Name of the Resource group in which to deploy storage account"
+
+}
+
+variable "rg_avd_compute" {
+  type        = string
+  default     = "rg-avd-compute"
+  description = "Name of the Resource group in which to deploy session host"
 }
 
 variable "workspace" {
@@ -33,34 +52,9 @@ variable "prefix" {
   description = "Prefix for all resources"
 }
 
-variable "rg" {
-  type        = string
-  default     = "rg-avd-compute"
-  description = "Name of the Resource group in which to deploy session host"
-}
-
 variable "rdsh_count" {
   description = "Number of AVD machines to deploy"
-  default     = 2
-}
-
-variable "domain_name" {
-  type        = string
-  default     = "MngEnvMCAP255683.onmicrosoft.com"
-  description = "Name of the domain to join"
-}
-
-variable "domain_user_upn" {
-  type        = string
-  default     = "admin" # do not include domain name as this is appended
-  description = "Username for domain join (do not include domain name as this is appended)"
-}
-
-variable "domain_password" {
-  type        = string
-  default     = "ChangeMe123!"
-  description = "Password of the user to authenticate with the domain"
-  sensitive   = true
+  default     = 1
 }
 
 variable "vm_size" {
@@ -84,15 +78,35 @@ variable "local_admin_password" {
   description = "local admin password"
   sensitive   = true
 }
-variable "vnet_name" {
+variable "avd_vnet_name" {
   type        = string
   default     = "AVD-VNET"
-  description = "Name of the VNET"
+  description = "Name of the VNET for AVD machines"
 }
 
-variable "subnet_name" {
+variable "avd_subnet_name" {
   type        = string
   default     = "AVD-SUBNET"
-  description = "Name of the Subnet"
+  description = "Name of the Subnet for AVD machines"
+
+}
+
+variable "storage_account_vnet_name" {
+  type        = string
+  default     = "STORAGE-VNET"
+  description = "Name of the VNET for storage account"
+
+}
+
+variable "storage_account_subnet_name" {
+  type        = string
+  default     = "STORAGE-SUBNET"
+  description = "Name of the Subnet for storage account"
+}
+
+variable "storage_account_name" {
+  type        = string
+  default     = "sa-avd-file-sync-"
+  description = "Name of the storage account"
 
 }

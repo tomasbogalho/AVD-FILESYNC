@@ -1,7 +1,20 @@
-# Resource group name is output when execution plan is applied.
+# Resoure group for AVD resources
 resource "azurerm_resource_group" "sh" {
   name     = var.rg_name
   location = var.resource_group_location
+}
+
+# Resoure group for AVD machines
+resource "azurerm_resource_group" "rg" {
+  name     = var.rg_avd_compute
+  location = var.resource_group_location
+}
+
+# Resource group for Storage Account Resource
+resource "azurerm_resource_group" "rg_sa" {
+  name     = var.rg_sa
+  location = var.resource_group_location
+
 }
 
 # Create AVD workspace
@@ -63,11 +76,6 @@ resource "random_string" "AVD_local_password" {
   override_special = "*!@#?"
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = var.rg
-  location = var.resource_group_location
-}
-
 resource "azurerm_network_interface" "avd_vm_nic" {
   count               = var.rdsh_count
   name                = "${var.prefix}-${count.index + 1}-nic"
@@ -115,7 +123,6 @@ resource "azurerm_windows_virtual_machine" "avd_vm" {
   ]
 }
 
-
 resource "azurerm_virtual_machine_extension" "aad_login" {
   count                = var.rdsh_count
   name                 = "AADLogin"
@@ -124,7 +131,6 @@ resource "azurerm_virtual_machine_extension" "aad_login" {
   type                 = "AADLoginForWindows" # For Windows VMs: AADLoginForWindows for linux VMs: AADLoginForLinux
   type_handler_version = "1.0"                # There may be a more recent version
 }
-
 
 resource "azurerm_virtual_machine_extension" "vmext_dsc" {
   count                      = var.rdsh_count
@@ -160,17 +166,65 @@ PROTECTED_SETTINGS
 }
 
 
-
+#vnet components for AVD
 resource "azurerm_virtual_network" "vnet" {
-  name                = var.vnet_name
-  address_space       = ["10.0.0.0/16"]
+  name                = var.avd_vnet_name
+  address_space       = ["10.0.0.0/24"]
   location            = var.resource_group_location
   resource_group_name = azurerm_resource_group.sh.name
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = var.subnet_name
+  name                 = var.avd_subnet_name
   resource_group_name  = azurerm_resource_group.sh.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.0.0/24"]
 }
+
+#creating a new vnet
+resource "azurerm_virtual_network" "storage_account_vnet" {
+  name                = var.storage_account_vnet_name
+  address_space       = ["10.0.1.0/24"]
+  location            = var.resource_group_location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_subnet" "storage_account_subnet" {
+  name                 = var.storage_account_subnet_name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.storage_account_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+
+}
+
+#creating a peering between avd vent and storage account vnet 
+resource "azurerm_virtual_network_peering" "peering" {
+  name                         = "avd-vnet-to-storage-account-vnet"
+  resource_group_name          = azurerm_resource_group.sh.name
+  virtual_network_name         = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [
+    azurerm_virtual_network.vnet,
+    azurerm_virtual_network.storage_account_vnet
+  ]
+}
+
+
+#creating a storage account with a private endpoint in vnet storage_account_vnet
+resource "azurerm_storage_account" "sa" {
+  name                     = var.storage_account_name + random_string.sa.result
+  resource_group_name      = azurerm_resource_group.rg_sa.name
+  location                 = var.resource_group_location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  network_rules {
+    default_action             = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
+  }
+
+}
+
