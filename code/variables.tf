@@ -96,17 +96,3 @@ variable "subnet_name" {
   description = "Name of the Subnet"
 
 }
-
-variable "service_principal_id" {
-  type        = string
-  default     = ARM_CL
-  description = "Service Principal ID"
-
-}
-
-variable "sevice_principal_secret" {
-  type        = string
-  default     = ARM_CLIENT_ID
-  description = "Service Principal Secret"
-
-}
