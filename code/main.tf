@@ -154,7 +154,7 @@ SETTINGS
 PROTECTED_SETTINGS
 
   depends_on = [
-    azurerm_virtual_machine_extension.domain_join,
+    azurerm_virtual_machine_extension.aad_login,
     azurerm_virtual_desktop_host_pool.hostpool
   ]
 }
