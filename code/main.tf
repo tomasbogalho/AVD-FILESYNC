@@ -126,12 +126,11 @@ resource "azurerm_virtual_machine_extension" "domain_join" {
 
   settings = <<SETTINGS
     {
+      "Name": "${var.domain_name}",
       "OUPath": "${var.ou_path}",
+      "User": "${var.domain_user_upn}@${var.domain_name}",
       "Restart": "true",
-      "Options": "3",
-      "UseServicePrincipal": "true",
-      "ServicePrincipalId": "${AZURE_AD_CLIENT_ID}",
-      "ServicePrincipalSecret": "${AZURE_AD_CLIENT_SECRET}",
+      "Options": "3"
     }
 SETTINGS
 
@@ -180,6 +179,7 @@ PROTECTED_SETTINGS
     azurerm_virtual_desktop_host_pool.hostpool
   ]
 }
+
 
 
 resource "azurerm_virtual_network" "vnet" {
