@@ -29,60 +29,49 @@ variable "rfc3339" {
 
 variable "prefix" {
   type        = string
-  default     = "avdtf"
-  description = "Prefix of the name of the AVD machine(s)"
-}
-
-variable "vnet_name" {
-  type        = string
-  description = "Name of the virtual network"
-  default     = "my-vnet"
-}
-
-variable "subnet_name" {
-  type        = string
-  description = "Name of the subnet"
-  default     = "my-subnet"
-}
-
-variable "public_ip_name" {
-  type        = string
-  description = "Name of the public IP address"
-  default     = "my-public-ip"
-}
-
-variable "nsg_name" {
-  type        = string
-  description = "Name of the network security group"
-  default     = "my-nsg"
-}
-
-variable "nic_name" {
-  type        = string
-  description = "Name of the network interface"
-  default     = "my-nic"
+  default     = "avd"
+  description = "Prefix for all resources"
 }
 
 variable "vm_name" {
   type        = string
+  default     = "avd-vm"
   description = "Name of the virtual machine"
-  default     = "my-vm"
 }
 
 variable "vm_size" {
   type        = string
+  default     = "Standard_D2s_v3"
   description = "Size of the virtual machine"
-  default     = "Standard_DS2_v2"
 }
 
-variable "admin_username" {
+variable "nic_name" {
   type        = string
-  description = "Username for the virtual machine"
-  default     = "adminuser"
+  default     = "avd-nic"
+  description = "Name of the network interface"
 }
 
-variable "admin_password" {
+variable "subnet_name" {
   type        = string
-  description = "Password for the virtual machine"
-  default     = "Password123!"
+  default     = "avd-subnet"
+  description = "Name of the subnet"
+}
+
+variable "vnet_name" {
+  type        = string
+  default     = "avd-vn"
+  description = "Name of the virtual network"
+  
+}
+
+variable "vnet_address_space" {
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+  
+}
+
+variable "subnet_address_prefix" {
+  type        = list(string)
+  default     = ["10.0.0.0/24"]
+  
 }
