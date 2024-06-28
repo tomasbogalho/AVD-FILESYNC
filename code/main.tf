@@ -144,10 +144,7 @@ PROTECTED_SETTINGS
     ignore_changes = [settings, protected_settings]
   }
 
-  depends_on = [
-    azurerm_virtual_network_peering.peer1,
-    azurerm_virtual_network_peering.peer2
-  ]
+
 }
 
 resource "azurerm_virtual_machine_extension" "vmext_dsc" {
