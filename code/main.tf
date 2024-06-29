@@ -229,7 +229,7 @@ resource "azurerm_virtual_network_peering" "name" {
 
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
-  name                     = random_string.storage_account_name.result
+  name                     = "sa_demo_${random_string.storage_account_name.result}"
   resource_group_name      = azurerm_resource_group.rg_sa.name
   location                 = var.resource_group_location
   account_tier             = "Standard"
