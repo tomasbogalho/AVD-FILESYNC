@@ -59,6 +59,17 @@ resource "azurerm_storage_account" "sa" {
 
 }
 
+# adding a fileshare to the storage account
+resource "azurerm_storage_share" "fileshare" {
+  name                 = "fileshare"
+  storage_account_name = azurerm_storage_account.sa.name
+  quota                = 1024
+  depends_on = [
+    azurerm_storage_account.sa
+  ]
+}
+
+
 
 resource "azurerm_private_dns_zone" "pdns_st" {
   name                = "privatelink.blob.core.windows.net"
