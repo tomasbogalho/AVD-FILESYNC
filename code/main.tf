@@ -309,11 +309,10 @@ resource "azurerm_storage_account" "sa" {
     virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
   }
   depends_on = [
-    azurerm_subnet.storage_account_subnet
+    azurrm.resource_group_name.rg_sa
   ]
 
 }
-
 resource "azurerm_private_dns_zone" "pdns_st" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.rg_sa.name
