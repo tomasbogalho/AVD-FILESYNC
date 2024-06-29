@@ -116,6 +116,12 @@ variable "onprem_subnet_name" {
   description = "Name of the Subnet for on-prem resources"
 
 }
+variable "bastion_subnet_name" {
+  type        = string
+  default     = "AzureBastionSubnet"
+  description = "Name of the Subnet for bastion host"
+
+}
 
 variable "storage_account_name" {
   type        = string

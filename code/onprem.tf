@@ -18,7 +18,17 @@ resource "azurerm_subnet" "onprem_subnet" {
   name                 = var.onprem_subnet_name
   resource_group_name  = azurerm_resource_group.rg_onprem.name
   virtual_network_name = azurerm_virtual_network.onprem_vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = ["10.0.2.0/25"]
+  depends_on = [
+    azurerm_virtual_network.onprem_vnet
+  ]
+}
+
+resource "azurerm_subnet" "bastion_subnet" {
+  name                 = var.bastion_subnet_name
+  resource_group_name  = azurerm_resource_group.rg_onprem.name
+  virtual_network_name = azurerm_virtual_network.onprem_vnet.name
+  address_prefixes     = ["10.0.2.128/25"]
   depends_on = [
     azurerm_virtual_network.onprem_vnet
   ]
