@@ -41,7 +41,7 @@ locals {
 
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
-  name                     = storage_account_local_name
+  name                     = local.storage_account_local_name
   resource_group_name      = azurerm_resource_group.rg_sa.name
   location                 = var.resource_group_location
   account_tier             = "Standard"
