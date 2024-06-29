@@ -10,6 +10,12 @@ resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
 }
 
+# Resource group simulation OnPrem environment
+resource "azurerm_resource_group" "rg_onprem" {
+  name     = var.rg_onprem
+  location = var.resource_group_location
+}
+
 # Resource group for Storage Account Resource
 resource "azurerm_resource_group" "rg_sa" {
   name     = var.rg_sa
@@ -69,7 +75,7 @@ locals {
 }
 
 resource "random_string" "storage_account_name" {
-  length  = 8
+  length  = 20
   lower   = true
   numeric = false
   special = false
@@ -165,13 +171,16 @@ PROTECTED_SETTINGS
   ]
 }
 
-
 #vnet components for AVD
 resource "azurerm_virtual_network" "vnet" {
   name                = var.avd_vnet_name
   address_space       = ["10.0.0.0/24"]
   location            = var.resource_group_location
   resource_group_name = azurerm_resource_group.sh.name
+
+  depends_on = [
+    azurerm_resource_group.sh
+  ]
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -179,6 +188,9 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = azurerm_resource_group.sh.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.0.0/24"]
+  depends_on = [
+    azurerm_virtual_network.vnet
+  ]
 }
 
 #creating a new vnet
@@ -187,6 +199,9 @@ resource "azurerm_virtual_network" "storage_account_vnet" {
   address_space       = ["10.0.1.0/24"]
   location            = var.resource_group_location
   resource_group_name = azurerm_resource_group.rg_sa.name
+  depends_on = [
+    azurerm_resource_group.rg_sa
+  ]
 }
 
 resource "azurerm_subnet" "storage_account_subnet" {
@@ -194,8 +209,31 @@ resource "azurerm_subnet" "storage_account_subnet" {
   resource_group_name  = azurerm_resource_group.rg_sa.name
   virtual_network_name = azurerm_virtual_network.storage_account_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
-
+  depends_on = [
+    azurerm_virtual_network.storage_account_vnet
+  ]
 }
+
+resource "azurerm_virtual_network" "onprem_vnet" {
+  name                = var.onprem_vnet_name
+  address_space       = ["10.0.2.0/24"]
+  location            = var.resource_group_location
+  resource_group_name = azurerm_resource_group.rg_onprem.name
+  depends_on = [
+    azurerm_resource_group.rg_onprem
+  ]
+}
+
+resource "azurerm_subnet" "name" {
+  name                 = var.onprem_subnet_name
+  resource_group_name  = azurerm_resource_group.rg_onprem.name
+  virtual_network_name = azurerm_virtual_network.onprem_vnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+  depends_on = [
+    azurerm_virtual_network.onprem_vnet
+  ]
+}
+
 
 #creating a peering between avd vent and storage account vnet 
 resource "azurerm_virtual_network_peering" "peering" {
@@ -211,6 +249,7 @@ resource "azurerm_virtual_network_peering" "peering" {
     azurerm_virtual_network.storage_account_vnet
   ]
 }
+
 #creating the peering between storage account vnet and avd vnet
 resource "azurerm_virtual_network_peering" "name" {
   name                         = "storage-account-vnet-to-avd-vnet"
@@ -227,6 +266,36 @@ resource "azurerm_virtual_network_peering" "name" {
 
 }
 
+#creating the peering between storage account vnet and onprem vnet
+resource "azurerm_virtual_network_peering" "name" {
+  name                         = "storage-account-vnet-to-onprem-vnet"
+  resource_group_name          = azurerm_resource_group.rg_sa.name
+  virtual_network_name         = azurerm_virtual_network.storage_account_vnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.onprem_vnet.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [
+    azurerm_virtual_network.onprem_vnet,
+    azurerm_virtual_network.storage_account_vnet
+  ]
+
+}
+# creating the peering between onprem vnet and storage account vnet
+resource "azurerm_virtual_network_peering" "name" {
+  name                         = "onprem-vnet-to-storage-account-vnet"
+  resource_group_name          = azurerm_resource_group.rg_onprem.name
+  virtual_network_name         = azurerm_virtual_network.onprem_vnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [
+    azurerm_virtual_network.onprem_vnet,
+    azurerm_virtual_network.storage_account_vnet
+  ]
+}
+
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
   name                     = "sademo${random_string.storage_account_name.result}"
@@ -239,12 +308,18 @@ resource "azurerm_storage_account" "sa" {
     default_action             = "Deny"
     virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
   }
+  depends_on = [
+    azurerm_subnet.storage_account_subnet
+  ]
 
 }
 
 resource "azurerm_private_dns_zone" "pdns_st" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.rg_sa.name
+  depends_on = [
+    azurerm_storage_account.sa
+  ]
 }
 
 resource "azurerm_private_endpoint" "pep_st" {
@@ -262,6 +337,9 @@ resource "azurerm_private_endpoint" "pep_st" {
     name                 = "dns-group-sta"
     private_dns_zone_ids = [azurerm_private_dns_zone.pdns_st.id]
   }
+  depends_on = [
+    azurerm_private_dns_zone.pdns_st
+  ]
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_sta" {
@@ -269,6 +347,9 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_sta" {
   resource_group_name   = azurerm_resource_group.rg.name
   private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
   virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
+  depends_on = [
+    azurerm_private_dns_zone.pdns_st
+  ]
 }
 
 resource "azurerm_private_dns_a_record" "dns_a_sta" {
@@ -277,4 +358,7 @@ resource "azurerm_private_dns_a_record" "dns_a_sta" {
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = 300
   records             = [azurerm_private_endpoint.pep_st.private_service_connection.0.private_ip_address]
+  depends_on = [
+    azurerm_private_endpoint.pep_st
+  ]
 }

@@ -15,6 +15,12 @@ variable "rg_sa" {
   description = "Name of the Resource group in which to deploy storage account"
 
 }
+variable "rg_onprem" {
+  type        = string
+  default     = "rg-onprem-resources"
+  description = "Name of the Resource group in which to deploy on-prem resources"
+
+}
 
 variable "rg_avd_compute" {
   type        = string
@@ -96,6 +102,19 @@ variable "storage_account_subnet_name" {
   type        = string
   default     = "STORAGE-SUBNET"
   description = "Name of the Subnet for storage account"
+}
+
+variable "onprem_vnet_name" {
+  type        = string
+  default     = "ONPREM-VNET"
+  description = "Name of the VNET for on-prem resources"
+}
+
+variable "onprem_subnet_name" {
+  type        = string
+  default     = "ONPREM-SUBNET"
+  description = "Name of the Subnet for on-prem resources"
+
 }
 
 variable "storage_account_name" {
