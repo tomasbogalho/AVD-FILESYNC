@@ -1,5 +1,3 @@
-
-/*
 #creating a peering between avd vent and storage account vnet 
 resource "azurerm_virtual_network_peering" "peering1" {
   name                         = "avd-vnet-to-storage-account-vnet"
@@ -59,4 +57,3 @@ resource "azurerm_virtual_network_peering" "peering4" {
     azurerm_virtual_network.storage_account_vnet
   ]
 }
-*/
