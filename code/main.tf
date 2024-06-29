@@ -75,7 +75,7 @@ locals {
 }
 
 resource "random_string" "storage_account_name" {
-  length  = 20
+  length  = 18
   lower   = true
   numeric = false
   special = false
