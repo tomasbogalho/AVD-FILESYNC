@@ -298,7 +298,7 @@ resource "azurerm_virtual_network_peering" "peering4" {
 
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
-  name                     = "sademowetgkhzbicwfnvyuws"
+  name                     = "sademo${random_string.storage_account_name.result}"
   resource_group_name      = azurerm_resource_group.rg_sa.name
   location                 = var.resource_group_location
   account_tier             = "Standard"
@@ -337,7 +337,8 @@ resource "azurerm_private_endpoint" "pep_st" {
     private_dns_zone_ids = [azurerm_private_dns_zone.pdns_st.id]
   }
   depends_on = [
-    azurerm_private_dns_zone.pdns_st
+    azurerm_private_dns_zone.pdns_st,
+    azurerm_storage_account.sa
   ]
 }
 
@@ -347,7 +348,8 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_sta" {
   private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
   virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
   depends_on = [
-    azurerm_private_dns_zone.pdns_st
+    azurerm_private_dns_zone.pdns_st,
+    azurerm_storage_account.sa
   ]
 }
 
@@ -358,6 +360,7 @@ resource "azurerm_private_dns_a_record" "dns_a_sta" {
   ttl                 = 300
   records             = [azurerm_private_endpoint.pep_st.private_service_connection.0.private_ip_address]
   depends_on = [
-    azurerm_private_endpoint.pep_st
+    azurerm_private_endpoint.pep_st,
+    azurerm_storage_account.sa
   ]
 }
