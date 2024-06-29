@@ -58,6 +58,7 @@ resource "azurerm_storage_account" "sa" {
   ]
 
 }
+/*
 resource "azurerm_private_dns_zone" "pdns_st" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.rg_sa.name
@@ -109,3 +110,4 @@ resource "azurerm_private_dns_a_record" "dns_a_sta" {
     azurerm_storage_account.sa
   ]
 }
+*/
