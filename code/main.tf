@@ -309,7 +309,9 @@ resource "azurerm_storage_account" "sa" {
     virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
   }
   depends_on = [
-    azurerm_resource_group.rg_sa
+    azurerm_resource_group.rg_sa,
+    random_string.storage_account_name,
+    azurerm_subnet.storage_account_subnet
   ]
 
 }
