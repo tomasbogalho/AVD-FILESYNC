@@ -39,18 +39,6 @@ locals {
 
 }
 
-resource "azurerm_storage_account" "sa" {
-  name                     = local.storage_account_local_name
-  resource_group_name      = azurerm_resource_group.rg_sa.name
-  location                 = var.resource_group_location
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-
-  tags = {
-    environment = "staging"
-  }
-}
-/*
 #creating a storage account with a private endpoint in vnet storage_account_vnet
 resource "azurerm_storage_account" "sa" {
   name                     = local.storage_account_local_name
@@ -60,8 +48,8 @@ resource "azurerm_storage_account" "sa" {
   account_replication_type = "LRS"
 
   network_rules {
-    default_action             = "Deny"
-    virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
+    default_action = "Deny"
+    #virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
   }
   depends_on = [
     azurerm_resource_group.rg_sa,
@@ -70,7 +58,7 @@ resource "azurerm_storage_account" "sa" {
   ]
 
 }
-*/
+
 /*
 resource "azurerm_private_dns_zone" "pdns_st" {
   name                = "privatelink.blob.core.windows.net"
