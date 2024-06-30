@@ -158,3 +158,13 @@ resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
   storage_account_id    = azurerm_storage_account.sa.id
 }
 
+# registering onprem file sync server with the storage sync service
+resource "azurerm_storage_sync_server_endpoint" "storage_sync_server_endpoint" {
+  name                  = "storage-sync-server-endpoint"
+  storage_sync_group_id = azurerm_storage_sync_group.storage_sync_group.id
+  server_local_path     = "C:\\FileSync"
+  server_name           = azurerm_windows_virtual_machine.file_sync_vm.name
+  server_resource_id    = azurerm_windows_virtual_machine.file_sync_vm.id
+}
+
+
