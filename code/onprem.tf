@@ -94,6 +94,37 @@ resource "azurerm_windows_virtual_machine" "onprem_vm" {
   }
 }
 
+#Install Active Directory on the DC01 VM
+resource "azurerm_virtual_machine_extension" "script_extension" {
+  name = "install_ad"
+  #  resource_group_name  = azurerm_resource_group.main.name
+  virtual_machine_id   = azurerm_windows_virtual_machine.file_sync_vm.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.9"
+
+  protected_settings = <<SETTINGS
+  {    
+    "commandToExecute": "powershell -command " \
+    $osver = [System.Environment]::OSVersion.Version; \
+    if ($osver.Equals([System.Version]::new(10, 0, 20348, 0))) { \
+        Invoke-WebRequest -Uri 'https://aka.ms/afs/agent/Server2022' -OutFile 'StorageSyncAgent.msi'; \
+    } elseif ($osver.Equals([System.Version]::new(10, 0, 17763, 0))) { \
+        Invoke-WebRequest -Uri 'https://aka.ms/afs/agent/Server2019' -OutFile 'StorageSyncAgent.msi'; \
+    } elseif ($osver.Equals([System.Version]::new(10, 0, 14393, 0))) { \
+        Invoke-WebRequest -Uri 'https://aka.ms/afs/agent/Server2016' -OutFile 'StorageSyncAgent.msi'; \
+    } elseif ($osver.Equals([System.Version]::new(6, 3, 9600, 0))) { \
+        Invoke-WebRequest -Uri 'https://aka.ms/afs/agent/Server2012R2' -OutFile 'StorageSyncAgent.msi'; \
+    } else { \
+        throw [System.PlatformNotSupportedException]::new('Azure File Sync is only supported on Windows Server 2012 R2, Windows Server 2016, Windows Server 2019 and Windows Server 2022'); \
+    } \
+    Start-Process -FilePath 'StorageSyncAgent.msi' -ArgumentList '/quiet' -Wait; \
+    Remove-Item -Path '.\StorageSyncAgent.msi' -Recurse -Force\
+    Register-AzStorageSyncServer -ParentObject ${var.storageSync}"
+  }
+  SETTINGS
+}
+
 # adding network security group to onprem windows server
 resource "azurerm_network_security_group" "onprem_nsg" {
   name                = "onprem-nsg"
