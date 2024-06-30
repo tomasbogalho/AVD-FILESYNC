@@ -151,3 +151,7 @@ variable "arm_client_id" {
 
 }
 
+data "azuread_service_principal" "storagesync" {
+  display_name = "Microsoft.StorageSync"
+}
+
