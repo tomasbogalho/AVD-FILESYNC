@@ -56,10 +56,11 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -out=tfplan -var="arm_subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+      run: terraform plan -input=false -out=tfplan -var="arm_subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" -var="arm_tenant_id=${{ secrets.AZURE_AD_TENANT_ID }}" -var="arm_client_id=${{ secrets.AZURE_AD_CLIENT_ID }}" -var="arm_client_secret=${{ secrets.AZURE_AD_CLIENT_SECRET }}"
       working-directory: ./code
       env:
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -69,6 +70,7 @@ jobs:
       working-directory: ./code
       env:
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
     
     - name: Set output
       run: echo "example_output=value" >> $GITHUB_ENV
