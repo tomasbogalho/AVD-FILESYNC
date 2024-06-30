@@ -22,7 +22,7 @@ resource "azurerm_virtual_network" "vnet" {
   ]
 }
 
-resource "azurerm_subnet" "subnet" {
+resource "azurerm_subnet" "avd_subnet" {
   name                 = var.avd_subnet_name
   resource_group_name  = azurerm_resource_group.sh.name
   virtual_network_name = azurerm_virtual_network.vnet.name
@@ -91,7 +91,7 @@ resource "azurerm_network_interface" "avd_vm_nic" {
 
   ip_configuration {
     name                          = "nic${count.index + 1}_config"
-    subnet_id                     = azurerm_subnet.subnet.id
+    subnet_id                     = azurerm_subnet.avd_subnet.id
     private_ip_address_allocation = "dynamic"
   }
 
