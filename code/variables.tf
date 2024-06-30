@@ -140,7 +140,3 @@ locals {
   config = yamldecode(file("../.github/workflows/test.yml"))
 }
 
-variable "subscription_id" {
-  description = "Subscription ID"
-  default     = local.config["ARM_SUBSCRIPTION_ID"]
-}
