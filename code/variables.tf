@@ -140,3 +140,8 @@ locals {
   config = yamldecode(file("../.github/workflows/terraform.yml"))
 }
 
+variable "arm_subscription_id" {
+  type        = string
+  description = "Azure Subscription ID"
+}
+

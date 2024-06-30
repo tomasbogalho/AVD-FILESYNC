@@ -115,7 +115,7 @@ resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
 }
 
 resource "azurerm_role_assignment" "afs_storage_account_rbac" {
-  scope                = "/subscriptions/${local.config["jobs"]["terraform"]["env"]["ARM_SUBSCRIPTION_ID"]}/resourceGroups/${var.rg_onprem}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+  scope                = "/subscriptions/${var.arm_subscription_id}/resourceGroups/${var.rg_onprem}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
   role_definition_name = "Reader and Data Access"
   principal_id         = azurerm_storage_sync.storage_sync.id
 }
