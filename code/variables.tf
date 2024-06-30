@@ -137,6 +137,6 @@ variable "github_actions_ip_ranges" {
 
 
 locals {
-  config = yamldecode(file("../.github/workflows/test.yml"))
+  config = yamldecode(file("../.github/workflows/terraform.yml"))
 }
 
