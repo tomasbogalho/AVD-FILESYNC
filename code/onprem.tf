@@ -115,7 +115,7 @@ resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
 }
 
 resource "azurerm_role_assignment" "afs_storage_account_rbac" {
-  scope                = "/subscriptions/${var.arm_subscription_id}"
+  scope                = azurerm_storage_account.sa.id //"/subscriptions/${var.arm_subscription_id}"
   role_definition_name = "Reader and Data Access"
-  principal_id         = var.arm_client_id //azurerm_storage_sync.storage_sync.id
+  principal_id         = azurerm_storage_sync.storage_sync.id //var.arm_client_id 
 }
