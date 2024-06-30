@@ -147,12 +147,12 @@ variable "arm_subscription_id" {
 
 variable "arm_client_id" {
   type        = string
-  description = "Azure Client ID" 
+  description = "Azure Client ID"
 }
 
 variable "arm_tenant_id" {
   type        = string
   description = "Azure Tenant ID"
   sensitive   = true
-  
+
 }
