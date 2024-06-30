@@ -65,6 +65,8 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -input=false -auto-approve tfplan
       working-directory: ./code
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     
     - name: Set output
       run: echo "example_output=value" >> $GITHUB_ENV
