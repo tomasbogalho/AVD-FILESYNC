@@ -66,6 +66,12 @@ resource "azurerm_storage_share" "fileshare" {
   name                 = "fileshare"
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 1024
+  acl {
+    id = "GhostedRecall"
+    access_policy {
+      permissions = "r"
+    }
+  }
   depends_on = [
     azurerm_storage_account.sa
   ]
