@@ -22,6 +22,9 @@ output "location" {
   description = "The Azure region"
   value       = azurerm_resource_group.sh.location
 }
+output "yaml_config" {
+  value = local.config
+}
 
 ##output "AVD_user_groupname" {
 #  description = "Azure Active Directory Group for AVD users"
