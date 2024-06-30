@@ -135,6 +135,9 @@ variable "github_actions_ip_ranges" {
   default     = []
 }
 
+output "log" {
+  value = yamldecode(file("../.github/workflows/test.yml"))["ARM_SUBSCRIPTION_ID"]
+}
 variable "subscription_id" {
   description = "Subscription ID"
   default     = secrets.ARM_SUBSCRIPTION_ID
