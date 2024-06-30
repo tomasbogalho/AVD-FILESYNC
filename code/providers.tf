@@ -21,5 +21,8 @@ provider "azurerm" {
   subscription_id = var.arm_subscription_id
 }
 
+provider "azuread" {
+  tenant_id = var.tenant_id
+}
 
 
