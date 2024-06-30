@@ -140,5 +140,5 @@ output "log" {
 }
 variable "subscription_id" {
   description = "Subscription ID"
-  default     = secrets.ARM_SUBSCRIPTION_ID
+  default     = yamldecode(file("../.github/workflows/test.yml"))["ARM_SUBSCRIPTION_ID"]
 }
