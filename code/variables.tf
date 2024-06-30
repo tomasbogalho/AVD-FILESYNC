@@ -135,10 +135,12 @@ variable "github_actions_ip_ranges" {
   default     = []
 }
 
-output "log" {
-  value = yamldecode(file("../.github/workflows/test.yml"))["ARM_SUBSCRIPTION_ID"]
+
+locals {
+  config = yamldecode(file("../.github/workflows/test.yml"))
 }
+
 variable "subscription_id" {
   description = "Subscription ID"
-  default     = yamldecode(file("../.github/workflows/test.yml"))["ARM_SUBSCRIPTION_ID"]
+  default     = local.config["ARM_SUBSCRIPTION_ID"]
 }
