@@ -134,3 +134,8 @@ variable "github_actions_ip_ranges" {
   description = "List of IP ranges for GitHub Actions"
   default     = []
 }
+
+variable "subscription_id" {
+  description = "Subscription ID"
+  default     = secrets.ARM_SUBSCRIPTION_ID
+}

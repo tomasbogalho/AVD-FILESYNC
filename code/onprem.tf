@@ -56,62 +56,6 @@ resource "azurerm_bastion_host" "bastion" {
   }
 }
 
-# onprem nic for the windows server
-resource "azurerm_network_interface" "onprem_nic" {
-  name                = "onprem-nic"
-  location            = var.resource_group_location
-  resource_group_name = azurerm_resource_group.rg_onprem.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.onprem_subnet.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-# adding a windows server to the onprem vnet
-resource "azurerm_windows_virtual_machine" "onprem_vm" {
-  name                = "onprem-vm"
-  resource_group_name = azurerm_resource_group.rg_onprem.name
-  location            = var.resource_group_location
-  size                = "Standard_DS1_v2"
-  admin_username      = "adminuser"
-  admin_password      = "Password1234!"
-  network_interface_ids = [
-    azurerm_network_interface.onprem_nic.id
-  ]
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
-    sku       = "2019-Datacenter"
-    version   = "latest"
-  }
-}
-
-#Install Active Directory on the DC01 VM
-resource "azurerm_virtual_machine_extension" "script_extension" {
-  name = "install_ad"
-  #  resource_group_name  = azurerm_resource_group.main.name
-  virtual_machine_id   = azurerm_windows_virtual_machine.file_sync_vm.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.9"
-
-}
-
-# adding network security group to onprem windows server
-resource "azurerm_network_security_group" "onprem_nsg" {
-  name                = "onprem-nsg"
-  location            = var.resource_group_location
-  resource_group_name = azurerm_resource_group.rg_onprem.name
-}
-
 
 # adding nic for file sync server
 resource "azurerm_network_interface" "file_sync_nic" {
@@ -167,6 +111,11 @@ resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
   storage_sync_group_id = azurerm_storage_sync_group.storage_sync_group.id
   file_share_name       = azurerm_storage_share.fileshare.name
   storage_account_id    = azurerm_storage_account.sa.id
+
 }
 
-
+resource "azurerm_role_assignment" "afs_storage_account_rbac" {
+  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/${var.rg_onprem}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+  role_definition_name = "Reader and Data Access"
+  principal_id         = azurerm_storage_sync.storage_sync.id
+}
