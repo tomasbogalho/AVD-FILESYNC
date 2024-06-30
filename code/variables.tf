@@ -129,3 +129,8 @@ variable "storage_account_name" {
   description = "Name of the storage account"
 
 }
+
+variable "github_actions_ip_ranges" {
+  description = "List of IP ranges for GitHub Actions"
+  default     = []
+}

@@ -35,6 +35,15 @@ jobs:
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+    - name: Fetch GitHub Actions IP ranges
+      run: |
+        curl https://api.github.com/meta | jq -r '.actions[]' > github_actions_ip_ranges.txt
+
+    - name: Save IP ranges as Terraform variables
+      run: |
+        echo 'variable "github_actions_ip_ranges" { default = [' > github_actions_ip_ranges.tf
+        sed -e 's/^/"/' -e 's/$/",/' github_actions_ip_ranges.txt >> github_actions_ip_ranges.tf
+        echo '] }' >> github_actions_ip_ranges.tf
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
