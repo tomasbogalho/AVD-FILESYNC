@@ -46,12 +46,13 @@ resource "azurerm_storage_account" "sa" {
   location                 = var.resource_group_location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-
+  /*
   network_rules {
-    # default_action             = "Deny"
-    v# irtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id, azurerm_subnet.onprem_subnet.id, azurerm_subnet.avd_subnet.id]
-    # ip_rules                   = var.github_actions_ip_ranges
+    default_action             = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id, azurerm_subnet.onprem_subnet.id, azurerm_subnet.avd_subnet.id]
+    ip_rules                   = var.github_actions_ip_ranges
   }
+  */
   depends_on = [
     azurerm_resource_group.rg_sa,
     random_string.storage_account_name,
