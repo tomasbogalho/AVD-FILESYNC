@@ -48,8 +48,8 @@ resource "azurerm_storage_account" "sa" {
   account_replication_type = "LRS"
 
   network_rules {
-    default_action = "Deny"
-    #virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id]
+    default_action             = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.storage_account_subnet.id, azurerm_subnet.onprem_subnet.id, azurerm_subnet.avd_subnet.id]
   }
   depends_on = [
     azurerm_resource_group.rg_sa,

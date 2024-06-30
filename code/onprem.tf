@@ -139,7 +139,7 @@ resource "azurerm_windows_virtual_machine" "file_sync_vm" {
     version   = "latest"
   }
 }
-
+/*
 # adding a network security group to the file sync server
 resource "azurerm_network_security_group" "file_sync_nsg" {
   name                = "file-sync-nsg"
@@ -174,3 +174,4 @@ resource "azurerm_virtual_machine_extension" "file_sync_policy" {
     }
 SETTINGS
 }
+*/
