@@ -20,8 +20,5 @@ provider "azurerm" {
   features {}
 }
 
-module "azure-filesync" {
-  source  = "ravensorb/azure-filesync/azurerm"
-  version = "1.0.0"
-}
+
 
