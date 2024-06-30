@@ -145,7 +145,7 @@ variable "arm_subscription_id" {
   description = "Azure Subscription ID"
 }
 
-variable "tenant_id" {
+variable "arm_tenant_id" {
   type        = string
   description = "Azure Tenant ID"
 
