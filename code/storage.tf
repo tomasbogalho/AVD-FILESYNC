@@ -74,7 +74,7 @@ resource "azurerm_storage_share" "fileshare" {
 
 
 resource "azurerm_private_dns_zone" "pdns_st" {
-  name                = "privatelink.blob.core.windows.net"
+  name                = "privatelink.file.core.windows.net"
   resource_group_name = azurerm_resource_group.rg_sa.name
   depends_on = [
     azurerm_storage_account.sa
@@ -89,7 +89,7 @@ resource "azurerm_private_endpoint" "pep_st" {
   private_service_connection {
     name                           = "sc-sta"
     private_connection_resource_id = azurerm_storage_account.sa.id
-    subresource_names              = ["blob"]
+    subresource_names              = ["file"]
     is_manual_connection           = false
   }
   private_dns_zone_group {
@@ -102,11 +102,36 @@ resource "azurerm_private_endpoint" "pep_st" {
   ]
 }
 
+# Link the private DNS zone to the storage account VNET
 resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_sta" {
   name                  = "lnk-dns-vnet-sta"
   resource_group_name   = azurerm_resource_group.rg_sa.name
   private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
   virtual_network_id    = azurerm_virtual_network.storage_account_vnet.id
+  depends_on = [
+    azurerm_private_dns_zone.pdns_st,
+    azurerm_storage_account.sa
+  ]
+}
+
+# Link the private DNS zone to the OnPrem VNET
+resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_onprem" {
+  name                  = "lnk-dns-vnet-onprem"
+  resource_group_name   = azurerm_resource_group.rg_sa.name
+  private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
+  virtual_network_id    = azurerm_virtual_network.onprem_vnet.id
+  depends_on = [
+    azurerm_private_dns_zone.pdns_st,
+    azurerm_storage_account.sa
+  ]
+}
+
+# Link the private DNS zone to the AVD VNET
+resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_lnk_avd" {
+  name                  = "lnk-dns-vnet-avd"
+  resource_group_name   = azurerm_resource_group.rg_sa.name
+  private_dns_zone_name = azurerm_private_dns_zone.pdns_st.name
+  virtual_network_id    = azurerm_virtual_network.avd_vnet.id
   depends_on = [
     azurerm_private_dns_zone.pdns_st,
     azurerm_storage_account.sa
