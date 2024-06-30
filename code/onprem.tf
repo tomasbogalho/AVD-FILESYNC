@@ -120,7 +120,7 @@ resource "azurerm_virtual_machine_extension" "script_extension" {
     } \
     Start-Process -FilePath 'StorageSyncAgent.msi' -ArgumentList '/quiet' -Wait; \
     Remove-Item -Path '.\StorageSyncAgent.msi' -Recurse -Force\
-    Register-AzStorageSyncServer -ParentObject ${var.storageSync}"
+    Register-AzStorageSyncServer -ParentObject ${azurerm_storage_sync.storage_sync.id}"
   }
   SETTINGS
 }
