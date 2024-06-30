@@ -145,19 +145,8 @@ variable "arm_subscription_id" {
   description = "Azure Subscription ID"
 }
 
-variable "arm_client_id" {
-  type        = string
-  description = "Azure Client ID"
-
-}
-
-
-data "azuread_service_principal" "storagesync" {
-  display_name = "Microsoft.StorageSync"
-}
-
 variable "tenant_id" {
-  description = "Tenant ID of the Azure AD"
   type        = string
-}
+  description = "Azure Tenant ID"
 
+}
