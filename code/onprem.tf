@@ -118,11 +118,7 @@ data "azuread_service_principal" "storagesync" {
   display_name = "Microsoft.StorageSync"
 }
 
-resource "azurerm_role_assignment" "afs_storage_account_rbac" {
-  scope                = azurerm_storage_account.sa.id
-  role_definition_name = "Reader and Data Access"
-  principal_id         = data.azuread_service_principal.storagesync.id
-}
+
 
 /*
 resource "azurerm_role_assignment" "afs_storage_account_rbac" {
