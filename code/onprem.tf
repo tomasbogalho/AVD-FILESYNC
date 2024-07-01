@@ -106,7 +106,7 @@ resource "azurerm_virtual_machine_extension" "filesync_extension" {
   settings   = <<SETTINGS
   {
     "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name}"
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
   }
   SETTINGS
   depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
@@ -137,7 +137,7 @@ resource "azurerm_storage_sync" "storage_sync" {
 }
 
 resource "azurerm_storage_sync_group" "storage_sync_group" {
-  name            = "StorageSyncGroup"
+  name            = var.storage_sync_group_name
   storage_sync_id = azurerm_storage_sync.storage_sync.id
 }
 
