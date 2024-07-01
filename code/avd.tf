@@ -111,7 +111,7 @@ resource "random_string" "avd_suf_name" {
 
 resource "azurerm_windows_virtual_machine" "avd_vm" {
   count                 = var.rdsh_count
-  name                  = "${var.prefix}-${count.index + 1}-${var.random_string.avd_suf_name.result}"
+  name                  = "${var.prefix}-${count.index + 1}-${random_string.avd_suf_name.result}"
   resource_group_name   = azurerm_resource_group.rg.name
   location              = azurerm_resource_group.rg.location
   size                  = var.vm_size
