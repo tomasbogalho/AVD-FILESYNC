@@ -103,14 +103,14 @@ resource "azurerm_virtual_machine_extension" "filesync_extension" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
 
-  settings = <<SETTINGS
+  settings   = <<SETTINGS
   {
     "fileUris": ["RegisterFileSyncServer.ps1"],  # Provide the URL to your script
     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File script.ps1 -rgName ${var.onprem_subnet_name} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name}"
   }
   SETTINGS
-  depends_on = [ azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk ]
-                 
+  depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
+
 }
 
 resource "azurerm_managed_disk" "datadisk" {
