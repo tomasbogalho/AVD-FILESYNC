@@ -175,5 +175,5 @@ variable "storage_sync_group_name" {
   type        = string
   default     = "StorageSyncGroup"
   description = "Name of the file sync group"
-  
+
 }
