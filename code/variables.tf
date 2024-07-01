@@ -156,3 +156,17 @@ variable "arm_tenant_id" {
   sensitive   = true
 
 }
+
+variable "filesync_vm_name" {
+  type        = string
+  default     = "filesync-vm"
+  description = "Name of the file sync VM"
+  
+}
+
+variable "storage_sync_service_name" {
+  type        = string
+  default     = "StorageSync"
+  description = "Name of the file sync service"
+  
+}

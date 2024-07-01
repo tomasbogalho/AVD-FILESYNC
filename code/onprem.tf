@@ -72,7 +72,7 @@ resource "azurerm_network_interface" "file_sync_nic" {
 
 # adding file sync server to the onprem vnet
 resource "azurerm_windows_virtual_machine" "file_sync_vm" {
-  name                = "file-sync-vm"
+  name                = var.filesync_vm_name
   resource_group_name = azurerm_resource_group.rg_onprem.name
   location            = var.resource_group_location
   size                = "Standard_DS1_v2"
@@ -95,8 +95,43 @@ resource "azurerm_windows_virtual_machine" "file_sync_vm" {
   }
 }
 
+# adding VM extension to run PowerShell script
+resource "azurerm_virtual_machine_extension" "filesync_extension" {
+  name                 = "filesync-extension"
+  virtual_machine_id   = azurerm_windows_virtual_machine.file_sync_vm.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = <<SETTINGS
+  {
+    "fileUris": ["RegisterFileSyncServer.ps1"],  # Provide the URL to your script
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File script.ps1 -rgName ${var.onprem_subnet_name} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name}"
+  }
+  SETTINGS
+  depends_on = [ azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk ]
+                 
+}
+
+resource "azurerm_managed_disk" "datadisk" {
+  name                 = "${var.filesync_vm_name}-disk1"
+  location             = azurerm_resource_group.example.location
+  resource_group_name  = azurerm_resource_group.example.name
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = 128
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "example" {
+  managed_disk_id    = azurerm_managed_disk.datadisk.id
+  virtual_machine_id = azurerm_virtual_machine.file_sync_vm.id
+  lun                = "10"
+  caching            = "ReadWrite"
+}
+
+
 resource "azurerm_storage_sync" "storage_sync" {
-  name                = "StorageSync"
+  name                = var.storage_sync_service_name
   resource_group_name = azurerm_resource_group.rg_onprem.name
   location            = azurerm_resource_group.rg_onprem.location
 }
@@ -117,13 +152,3 @@ resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
 data "azuread_service_principal" "storagesync" {
   display_name = "Microsoft.StorageSync"
 }
-
-
-
-/*
-resource "azurerm_role_assignment" "afs_storage_account_rbac" {
-  scope                = azurerm_storage_account.sa.id //"/subscriptions/${var.arm_subscription_id}"
-  role_definition_name = "Reader and Data Access"
-  principal_id         = data.azuread_service_principal.storagesync.id //azurerm_storage_sync.storage_sync.id //var.arm_client_id 
-}
-*/
