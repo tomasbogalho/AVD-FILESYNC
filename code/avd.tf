@@ -100,9 +100,18 @@ resource "azurerm_network_interface" "avd_vm_nic" {
   ]
 }
 
+resource "random_string" "avd_suf_name" {
+  length  = 5
+  lower   = true
+  numeric = false
+  special = false
+  upper   = false
+}
+
+
 resource "azurerm_windows_virtual_machine" "avd_vm" {
   count                 = var.rdsh_count
-  name                  = "${var.prefix}-${count.index + 1}"
+  name                  = "${var.prefix}-${count.index + 1}-${var.random_string.avd_suf_name.result}"
   resource_group_name   = azurerm_resource_group.rg.name
   location              = azurerm_resource_group.rg.location
   size                  = var.vm_size
