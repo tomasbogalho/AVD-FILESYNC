@@ -115,8 +115,8 @@ resource "azurerm_virtual_machine_extension" "filesync_extension" {
 
 resource "azurerm_managed_disk" "datadisk" {
   name                 = "${var.filesync_vm_name}-disk1"
-  location             = azurerm_resource_group.example.location
-  resource_group_name  = azurerm_resource_group.example.name
+  location             = azurerm_resource_group.rg_onprem.location
+  resource_group_name  = azurerm_resource_group.rg_onprem.name
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = 128
