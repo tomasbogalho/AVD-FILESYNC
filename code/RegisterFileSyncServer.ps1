@@ -36,8 +36,15 @@ function Disable-UserAccessControl {
 
 Disable-InternetExplorerESC
 
-Install-Module Az -Force -Confirm:$false
-Import-Module AZ -Force -Confirm:$false
+# Install the NuGet provider if it's not already installed
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+
+# Install the Az module
+Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser
+
+# Import the Az module
+Import-Module -Name Az -Force
+
 
 # Authenticate using the service principal
 $secureClientSecret = ConvertTo-SecureString $clientSecret -AsPlainText -Force
