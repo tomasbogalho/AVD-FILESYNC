@@ -42,7 +42,7 @@ variable "hostpool" {
 
 variable "rfc3339" {
   type        = string
-  default     = "2024-07-01T12:00:00Z"
+  default     = "2025-07-01T12:00:00Z"
   description = "Registration token expiration"
 }
 
@@ -68,13 +68,13 @@ variable "ou_path" {
 
 variable "local_admin_username" {
   type        = string
-  default     = "localadm"
+  default     = "localadmi"
   description = "local admin username"
 }
 
 variable "local_admin_password" {
   type        = string
-  default     = "ChangeMe123!"
+  default     = "ChangeMe123!!"
   description = "local admin password"
   sensitive   = true
 }
