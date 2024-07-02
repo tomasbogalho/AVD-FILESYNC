@@ -75,7 +75,7 @@ resource "azurerm_network_interface" "fss_vm_nic" {
 }
 
 # adding file sync server to the onprem vnet
-resource "azurerm_windows_virtual_machine" "avd_vm" {
+resource "azurerm_windows_virtual_machine" "file_sync_vm" {
   count                 = var.fss_count
   name                  = "${var.filesync_vm_name}-${count.index + 1}"
   resource_group_name   = azurerm_resource_group.rg_onprem.name
@@ -105,7 +105,6 @@ resource "azurerm_windows_virtual_machine" "avd_vm" {
   ]
 }
 
-
 resource "azurerm_managed_disk" "datadisk" {
   count                = var.fss_count
   name                 = "${lower(var.filesync_vm_name)}-${count.index + 1}-datadisk"
@@ -117,6 +116,7 @@ resource "azurerm_managed_disk" "datadisk" {
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "disk_attachment" {
+  count              = var.fss_count
   managed_disk_id    = azurerm_managed_disk.datadisk.id
   virtual_machine_id = azurerm_windows_virtual_machine.file_sync_vm.id
   lun                = "10"
