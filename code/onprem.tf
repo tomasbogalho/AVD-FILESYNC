@@ -75,8 +75,8 @@ resource "azurerm_windows_virtual_machine" "file_sync_vm" {
   resource_group_name = azurerm_resource_group.rg_onprem.name
   location            = var.resource_group_location
   size                = "Standard_DS1_v2"
-  admin_username      = "adminuser"
-  admin_password      = "Password1234!"
+  admin_username      = var.local_admin_username
+  admin_password      = var.local_admin_password
   network_interface_ids = [
     azurerm_network_interface.file_sync_nic.id
   ]
@@ -103,18 +103,19 @@ resource "azurerm_virtual_machine_extension" "filesync_extension" {
   type_handler_version = "1.10"
 
   settings = <<SETTINGS
-  {
-    "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
-  }
+    {
+      "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
+      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
+    }
   SETTINGS
 
   depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
-
 }
-output "extension_output" {
+
+output "extension_command_to_execute" {
   value = azurerm_virtual_machine_extension.filesync_extension.settings["commandToExecute"]
 }
+
 
 resource "azurerm_managed_disk" "datadisk" {
   name                 = "${var.filesync_vm_name}-disk1"

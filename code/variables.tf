@@ -68,13 +68,13 @@ variable "ou_path" {
 
 variable "local_admin_username" {
   type        = string
-  default     = "localadmi"
+  default     = "adminuser"
   description = "local admin username"
 }
 
 variable "local_admin_password" {
   type        = string
-  default     = "ChangeMe123!!"
+  default     = "Password1234!"
   description = "local admin password"
   sensitive   = true
 }
