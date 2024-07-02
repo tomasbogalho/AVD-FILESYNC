@@ -128,8 +128,8 @@ resource "azurerm_windows_virtual_machine" "avd_vm" {
 
   source_image_reference {
     publisher = "MicrosoftWindowsDesktop"
-    offer     = "Windows-10"
-    sku       = "20h2-evd"
+    offer     = "Windows-11"
+    sku       = "win11-22h2-avd"
     version   = "latest"
   }
 

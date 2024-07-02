@@ -159,7 +159,7 @@ variable "arm_tenant_id" {
 
 variable "filesync_vm_name" {
   type        = string
-  default     = "filesync-vm"
+  default     = "filesync-server"
   description = "Name of the file sync VM"
 
 }

@@ -37,10 +37,10 @@ function Disable-UserAccessControl {
 Disable-InternetExplorerESC
 
 # Install the NuGet provider if it's not already installed
-Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+Install-PackageProvider -Name NuGet -Force
 
 # Install the Az module
-Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser
+Install-Module -Name Az -AllowClobber -Force
 
 # Import the Az module
 Import-Module -Name Az -Force
