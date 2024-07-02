@@ -117,8 +117,8 @@ resource "azurerm_managed_disk" "datadisk" {
 
 resource "azurerm_virtual_machine_data_disk_attachment" "disk_attachment" {
   count              = var.fss_count
-  managed_disk_id    = azurerm_managed_disk.datadisk.id[count.index]
-  virtual_machine_id = azurerm_windows_virtual_machine.file_sync_vm.id[count.index]
+  managed_disk_id    = azurerm_managed_disk.datadisk[count.index].id
+  virtual_machine_id = azurerm_windows_virtual_machine.file_sync_vm[count.index].id
   lun                = "10"
   caching            = "ReadWrite"
 }
