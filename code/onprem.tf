@@ -56,7 +56,6 @@ resource "azurerm_bastion_host" "bastion" {
   }
 }
 
-
 # adding nic for file sync server
 resource "azurerm_network_interface" "file_sync_nic" {
   name                = "file-sync-nic"
@@ -103,14 +102,18 @@ resource "azurerm_virtual_machine_extension" "filesync_extension" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
 
-  settings   = <<SETTINGS
+  settings = <<SETTINGS
   {
     "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
   }
   SETTINGS
+
   depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
 
+}
+output "extension_output" {
+  value = azurerm_virtual_machine_extension.filesync_extension.settings["commandToExecute"]
 }
 
 resource "azurerm_managed_disk" "datadisk" {
