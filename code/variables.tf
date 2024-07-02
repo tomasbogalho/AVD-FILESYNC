@@ -59,7 +59,7 @@ variable "rdsh_count" {
 
 variable "fss_count" {
   description = "Number of file sync server to deploy"
-  default     = 4  
+  default     = 4
 }
 
 variable "vm_size" {
@@ -187,5 +187,5 @@ variable "sync_server_local_path" {
   type        = string
   default     = "F:\\FileSync"
   description = "Local path of the file sync server"
-  
+
 }
