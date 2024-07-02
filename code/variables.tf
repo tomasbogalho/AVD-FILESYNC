@@ -57,6 +57,11 @@ variable "rdsh_count" {
   default     = 1
 }
 
+variable "fss_count" {
+  description = "Number of file sync server to deploy"
+  default     = 4  
+}
+
 variable "vm_size" {
   description = "Size of the machine to deploy"
   default     = "Standard_DS2_v2"
@@ -176,4 +181,11 @@ variable "storage_sync_group_name" {
   default     = "StorageSyncGroup"
   description = "Name of the file sync group"
 
+}
+
+variable "sync_server_local_path" {
+  type        = string
+  default     = "F:\\FileSync"
+  description = "Local path of the file sync server"
+  
 }

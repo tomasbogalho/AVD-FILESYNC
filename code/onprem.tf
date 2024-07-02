@@ -57,31 +57,37 @@ resource "azurerm_bastion_host" "bastion" {
 }
 
 # adding nic for file sync server
-resource "azurerm_network_interface" "file_sync_nic" {
-  name                = "file-sync-nic"
-  location            = var.resource_group_location
+resource "azurerm_network_interface" "fss_vm_nic" {
+  count               = var.fss_count
+  name                = "${var.prefix}-${count.index + 1}-nic"
   resource_group_name = azurerm_resource_group.rg_onprem.name
+  location            = azurerm_resource_group.rg_onprem.location
 
   ip_configuration {
-    name                          = "internal"
+    name                          = "nic${count.index + 1}_config"
     subnet_id                     = azurerm_subnet.onprem_subnet.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "dynamic"
   }
+
+  depends_on = [
+    azurerm_resource_group.rg_onprem
+  ]
 }
 
 # adding file sync server to the onprem vnet
-resource "azurerm_windows_virtual_machine" "file_sync_vm" {
-  name                = var.filesync_vm_name
-  resource_group_name = azurerm_resource_group.rg_onprem.name
-  location            = var.resource_group_location
-  size                = "Standard_DS1_v2"
-  admin_username      = var.local_admin_username
-  admin_password      = var.local_admin_password
-  network_interface_ids = [
-    azurerm_network_interface.file_sync_nic.id
-  ]
+resource "azurerm_windows_virtual_machine" "avd_vm" {
+  count                 = var.fss_count
+  name                  = "${var.filesync_vm_name}-${count.index + 1}"
+  resource_group_name   = azurerm_resource_group.rg_onprem.name
+  location              = azurerm_resource_group.rg.location
+  size                  = var.vm_size
+  network_interface_ids = ["${azurerm_network_interface.fss_vm_nic.*.id[count.index]}"]
+  provision_vm_agent    = true
+  admin_username        = var.local_admin_username
+  admin_password        = var.local_admin_password
 
   os_disk {
+    name                 = "${lower(var.filesync_vm_name)}-${count.index + 1}"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -92,29 +98,17 @@ resource "azurerm_windows_virtual_machine" "file_sync_vm" {
     sku       = "2019-Datacenter"
     version   = "latest"
   }
-}
 
-# adding VM extension to run PowerShell script
-resource "azurerm_virtual_machine_extension" "filesync_extension" {
-  name                 = "filesync-extension"
-  virtual_machine_id   = azurerm_windows_virtual_machine.file_sync_vm.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-  /*
-  settings = <<SETTINGS
-    {
-      "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
-      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 Out-File -filepath postBuild.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
-    }
-  SETTINGS
-  /*/
-  depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
+  depends_on = [
+    azurerm_resource_group.rg_onprem,
+    azurerm_network_interface.fss_vm_nic
+  ]
 }
 
 
 resource "azurerm_managed_disk" "datadisk" {
-  name                 = "${var.filesync_vm_name}-disk1"
+  count                = var.fss_count
+  name                 = "${lower(var.filesync_vm_name)}-${count.index + 1}-datadisk"
   location             = azurerm_resource_group.rg_onprem.location
   resource_group_name  = azurerm_resource_group.rg_onprem.name
   storage_account_type = "Standard_LRS"
@@ -130,25 +124,24 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disk_attachment" {
 }
 
 
-resource "azurerm_storage_sync" "storage_sync" {
-  name                = var.storage_sync_service_name
-  resource_group_name = azurerm_resource_group.rg_onprem.name
-  location            = azurerm_resource_group.rg_onprem.location
+/* COMENTING AS RIGHT NOW SCRIP IS NOT WORKING
+# adding VM extension to run PowerShell script
+resource "azurerm_virtual_machine_extension" "filesync_extension" {
+  name                 = "filesync-extension"
+  virtual_machine_id   = azurerm_windows_virtual_machine.file_sync_vm.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+  
+  settings = <<SETTINGS
+    {
+      "fileUris": ["https://raw.githubusercontent.com/tomasbogalho/AVD-FILESYNC/main/code/RegisterFileSyncServer.ps1"],
+      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File RegisterFileSyncServer.ps1 Out-File -filepath postBuild.ps1 -rgName ${var.rg_onprem} -sssName ${var.storage_sync_service_name} -fssName ${var.filesync_vm_name} -SyncGroup ${var.storage_sync_group_name}"
+    }
+  SETTINGS
+  
+  depends_on = [azurerm_windows_virtual_machine.file_sync_vm, azurerm_managed_disk.datadisk]
 }
+*/
 
-resource "azurerm_storage_sync_group" "storage_sync_group" {
-  name            = var.storage_sync_group_name
-  storage_sync_id = azurerm_storage_sync.storage_sync.id
-}
 
-resource "azurerm_storage_sync_cloud_endpoint" "storage_sync_cloud_endpoint" {
-  name                  = "storage-sync-cloud-endpoint"
-  storage_sync_group_id = azurerm_storage_sync_group.storage_sync_group.id
-  file_share_name       = azurerm_storage_share.fileshare.name
-  storage_account_id    = azurerm_storage_account.sa.id
-
-}
-
-data "azuread_service_principal" "storagesync" {
-  display_name = "Microsoft.StorageSync"
-}
