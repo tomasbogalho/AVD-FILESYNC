@@ -52,6 +52,13 @@ variable "prefix" {
   description = "Prefix for all resources"
 }
 
+variable "fss_prefix" {
+  type        = string
+  default     = "fss"
+  description = "Prefix for all file sync server resources"
+
+}
+
 variable "rdsh_count" {
   description = "Number of AVD machines to deploy"
   default     = 1
