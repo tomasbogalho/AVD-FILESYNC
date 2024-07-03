@@ -36,3 +36,27 @@ ARM_CLIENT_SECRET
 ARM_SUBSCRIPTION_ID
 ARM_TENANT_ID
 These can be configured in your CI/CD pipeline or your local development environment.
+
+3. **Initialize Terraform**
+
+Navigate to the code directory and initialize Terraform.
+
+```tf
+cd AVD-FILESYNC/code
+terraform init
+
+4. **Plan and Apply Configuration**
+
+Review the Terraform plan and apply it to provision the resources.
+
+```tf
+terraform plan
+terraform apply
+
+## Deployment
+This project includes GitHub Actions workflows for CI/CD. To deploy using GitHub Actions:
+
+Push your changes to the main branch or create a pull request to trigger the Terraform GitHub Actions workflow.
+Review the action logs in the GitHub repository to monitor the deployment process.
+
+
