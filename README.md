@@ -35,8 +35,9 @@ The AVD-FILESYNC project is designed to automate the deployment and configuratio
    ARM_CLIENT_SECRET
    ARM_SUBSCRIPTION_ID
    ARM_TENANT_ID
-   These can be configured in your CI/CD pipeline or your local development environment.
    ````
+   These can be configured in your CI/CD pipeline or your local development environment.
+   
 
 3. **Initialize Terraform**
 
