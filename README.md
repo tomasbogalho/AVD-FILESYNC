@@ -40,8 +40,8 @@ The AVD-FILESYNC project is designed to automate the deployment and configuratio
 
 3. **Initialize Terraform**
 
-Navigate to the code directory and initialize Terraform.
-   
+   Navigate to the code directory and initialize Terraform.
+      
    ```sh
    cd AVD-FILESYNC/code
    terraform init
