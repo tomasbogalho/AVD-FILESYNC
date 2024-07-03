@@ -30,7 +30,7 @@ The AVD-FILESYNC project is designed to automate the deployment and configuratio
 
 Set up your Azure authentication credentials. This project requires the following environment variables to be set:
 
-```yml
+```sh
 ARM_CLIENT_ID
 ARM_CLIENT_SECRET
 ARM_SUBSCRIPTION_ID
@@ -41,7 +41,7 @@ These can be configured in your CI/CD pipeline or your local development environ
 
 Navigate to the code directory and initialize Terraform.
 
-```tf
+```sh
 cd AVD-FILESYNC/code
 terraform init
 
@@ -49,7 +49,7 @@ terraform init
 
 Review the Terraform plan and apply it to provision the resources.
 
-```tf
+```sh
 terraform plan
 terraform apply
 
