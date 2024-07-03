@@ -25,3 +25,14 @@ The AVD-FILESYNC project is designed to automate the deployment and configuratio
 
    ```sh
    git clone https://github.com/your-repository/AVD-FILESYNC.git
+
+2. **Configure Azure Authentication**
+
+Set up your Azure authentication credentials. This project requires the following environment variables to be set:
+
+```yml
+ARM_CLIENT_ID
+ARM_CLIENT_SECRET
+ARM_SUBSCRIPTION_ID
+ARM_TENANT_ID
+These can be configured in your CI/CD pipeline or your local development environment.
