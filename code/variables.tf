@@ -61,12 +61,12 @@ variable "fss_prefix" {
 
 variable "rdsh_count" {
   description = "Number of AVD machines to deploy"
-  default     = 1
+  default     = 2
 }
 
 variable "fss_count" {
   description = "Number of file sync server to deploy"
-  default     = 4
+  default     = 2
 }
 
 variable "vm_size" {
@@ -146,7 +146,6 @@ variable "github_actions_ip_ranges" {
   description = "List of IP ranges for GitHub Actions"
   default     = []
 }
-
 
 locals {
   config = yamldecode(file("../.github/workflows/terraform.yml"))
